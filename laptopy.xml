@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<laptops moddate="Wed Apr 06 14:27:22 CEST 2022">
+<laptops moddate="Wed Apr 06 14:31:22 CEST 2022">
     <laptop id="1">
-        <manufacturer>Samsung</manufacturer>
+        <manufacturer>Dell</manufacturer>
         <screen touch="nie">
             <size>12"</size>
             <resolution>Brak informacji</resolution>
@@ -551,5 +551,51 @@
         </graphic_card>
         <os>Windows 10 Profesional</os>
         <disc_reader>Blu-Ray</disc_reader>
+    </laptop>
+    <laptop id="25">
+        <manufacturer>Samsung</manufacturer>
+        <screen touch="nie">
+            <size>12"</size>
+            <resolution>Brak informacji</resolution>
+            <type>matowa</type>
+        </screen>
+        <processor>
+            <name>intel i7</name>
+            <physical_cores>4</physical_cores>
+            <clock_speed>2800</clock_speed>
+        </processor>
+        <ram>8GB</ram>
+        <disc type="SSD">
+            <storage>240GB</storage>
+        </disc>
+        <graphic_card>
+            <name>intel HD Graphics 4000</name>
+            <memory>1GB</memory>
+        </graphic_card>
+        <os>Windows 7 Home</os>
+        <disc_reader>Brak informacji</disc_reader>
+    </laptop>
+    <laptop id="26">
+        <manufacturer>MSI</manufacturer>
+        <screen touch="nie">
+            <size>15"</size>
+            <resolution>Brak informacji</resolution>
+            <type>matowa</type>
+        </screen>
+        <processor>
+            <name>intel i7</name>
+            <physical_cores>4</physical_cores>
+            <clock_speed>2800</clock_speed>
+        </processor>
+        <ram>8GB</ram>
+        <disc type="SSD">
+            <storage>240GB</storage>
+        </disc>
+        <graphic_card>
+            <name>intel HD Graphics 4000</name>
+            <memory>1GB</memory>
+        </graphic_card>
+        <os>Windows 7 Home</os>
+        <disc_reader>Brak informacji</disc_reader>
     </laptop>
 </laptops>

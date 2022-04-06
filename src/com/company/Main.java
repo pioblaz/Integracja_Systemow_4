@@ -23,6 +23,7 @@ import java.sql.*;
 import java.util.Date;
 
 import static com.company.MysqlProperties.*;
+import static javax.swing.ScrollPaneConstants.*;
 
 public class Main extends JFrame {
 
@@ -31,7 +32,7 @@ public class Main extends JFrame {
     public static int wierszeTMP = 0;
     public static int kolumny = 15;
     public static Object[][] dane;
-    public static Object[][] daneTMP = new Object[25][kolumny];
+    public static Object[][] daneTMP;
     public static int liczba_duplikatow = 0;
     public static boolean istnieje_duplikat = false;
 
@@ -42,6 +43,8 @@ public class Main extends JFrame {
     public Main() {
         setSize(1500, 700);
         setTitle("Integracja systemów Lab4 - Piotr Błażewicz");
+        setLayout(new FlowLayout(FlowLayout.LEFT));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static void importuj() {
@@ -127,40 +130,27 @@ public class Main extends JFrame {
         dane = new Object[wiersze][kolumny];
 
         Main okienko = new Main();
-        okienko.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JButton button_eksport = new JButton("Eksportuj dane do txt");   //przycisk eksport
-        button_eksport.setBounds(10, 470, 150, 50);
+        button_eksport.setSize(100, 100);
         button_eksport.setBackground(Color.ORANGE);
-        button_eksport.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JButton button_import = new JButton("Importuj dane z txt");   //przycisk importu
-        button_import.setBounds(170, 470, 150, 50);
         button_import.setBackground(Color.YELLOW);
-        button_import.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JButton button_eksport_xml = new JButton("Eksportuj dane do xml");   //przycisk eksport xml
-        button_eksport_xml.setBounds(330, 470, 150, 50);
         button_eksport_xml.setBackground(Color.CYAN);
-        button_eksport_xml.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JButton button_import_xml = new JButton("Importuj dane z xml");   //przycisk importu xml
-        button_import_xml.setBounds(490, 470, 150, 50);
         button_import_xml.setBackground(Color.GREEN);
-        button_import_xml.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JButton button_eksport_DB = new JButton("Eksportuj dane do bazy danych");   //przycisk eksport do BD
-        button_eksport_DB.setBounds(650, 470, 180, 50);
         button_eksport_DB.setBackground(Color.PINK);
-        button_eksport_DB.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JButton button_import_DB = new JButton("Importuj dane z bazy danych");   //przycisk importu z BD
-        button_import_DB.setBounds(840, 470, 180, 50);
         button_import_DB.setBackground(Color.RED);
-        button_import_DB.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JTextArea infoTA = new JTextArea();
-        infoTA.setBounds(10, 430, 300, 20);
         infoTA.setText("Witam serdecznie!");
         infoTA.setFocusable(false);
 
@@ -186,8 +176,8 @@ public class Main extends JFrame {
             }
         };
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(30, 40, 200, 300);
+        JScrollPane scrollPane = new JScrollPane(table, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(1480, 600));
 
         okienko.add(button_eksport);
         okienko.add(button_import);
@@ -457,6 +447,8 @@ public class Main extends JFrame {
                 try {
                     ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM laptop");
                     liczba_duplikatow = 0;
+
+                    daneTMP = new Object[wiersze][kolumny];
 
                     int i = 0, j = 0;
                     while (resultSet.next()) {
