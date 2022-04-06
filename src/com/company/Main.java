@@ -7,8 +7,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,7 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.company.MysqlProperties.*;
 import static javax.swing.ScrollPaneConstants.*;
@@ -129,6 +131,8 @@ public class Main extends JFrame {
 
         dane = new Object[wiersze][kolumny];
 
+        List<Integer> editedRows = new ArrayList<>();
+
         Main okienko = new Main();
 
         JButton button_eksport = new JButton("Eksportuj dane do txt");   //przycisk eksport
@@ -172,9 +176,27 @@ public class Main extends JFrame {
                 } else {
                     super.setValueAt(aValue, row, column);
                     dane[row][column] = aValue;
+                    editedRows.add(row);
                 }
             }
+
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+                Color color;
+
+                if (editedRows.contains(row))
+                    color = Color.WHITE;
+                else
+                    color = Color.GRAY;
+
+                c.setBackground(color);
+                okienko.repaint();
+                return c;
+            }
         };
+
+        //table.setBackground(Color.GRAY);
 
         JScrollPane scrollPane = new JScrollPane(table, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setPreferredSize(new Dimension(1480, 600));
@@ -225,6 +247,7 @@ public class Main extends JFrame {
                 }
 
                 infoTA.setText("Wczytano dane z pliku txt");
+                editedRows.clear();
                 okienko.repaint();
             }
         });
@@ -436,6 +459,7 @@ public class Main extends JFrame {
                     saxException.printStackTrace();
                 }
                 infoTA.setText("Wczytano dane z pliku xml");
+                editedRows.clear();
                 okienko.repaint();
             }
         });
@@ -502,7 +526,7 @@ public class Main extends JFrame {
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
-                infoTA.setText("Zapisano dane do bazy danych! Liczba duplikatow: " + liczba_duplikatow);
+                infoTA.setText("Zapisano do bazy danych " + (wiersze - liczba_duplikatow) + " nowych rekordów. Liczba duplikatow: " + liczba_duplikatow);
             }
         });
 
@@ -569,6 +593,7 @@ public class Main extends JFrame {
                     throwables.printStackTrace();
                 }
                 infoTA.setText("Wczytano dane z bazy danych");
+                editedRows.clear();
                 okienko.repaint();
             }
         });
