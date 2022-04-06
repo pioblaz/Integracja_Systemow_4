@@ -22,6 +22,3 @@ Samsung;12";1600x900;Brak informacji;nie;intel i5;4;2800;12GB;24GB;HDD;NVIDIA Ge
 Sony;11";Brak informacji;blyszczaca;tak;intel i7;4;2800;8GB;Brak informacji;Brak informacji;AMD Radeon Pro 455;1GB;Windows 7 Profesional;brak;
 Samsung;13";1366x768;Brak informacji;nie;intel i5;Brak informacji;2120;Brak informacji;Brak informacji;Brak informacji;intel HD Graphics 4000;2GB;Brak informacji;DVD;
 Samsung;15";1920x1080;matowa;nie;intel i9;Brak informacji;Brak informacji;Brak informacji;Brak informacji;SSD;intel HD Graphics 4000;2GB;Windows 10 Profesional;Blu-Ray;
-Samsung;12";Brak informacji;matowa;nie;intel i7;4;2800;8GB;240GB;SSD;intel HD Graphics 4000;1GB;Windows 7 Home;Brak informacji;
-MSI;15";Brak informacji;matowa;nie;intel i7;4;2800;8GB;240GB;SSD;intel HD Graphics 4000;1GB;Windows 7 Home;Brak informacji;
-Samsung;21";1366x768;Brak informacji;nie;intel i5;Brak informacji;2120;Brak informacji;Brak informacji;Brak informacji;intel HD Graphics 4000;2GB;Brak informacji;DVD;

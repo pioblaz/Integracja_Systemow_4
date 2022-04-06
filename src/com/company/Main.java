@@ -49,58 +49,6 @@ public class Main extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public static void importuj() {
-        FileReader fr = null;
-        FileReader frTMP = null;
-        String linia = "";
-        String liniaTMP = "";
-
-        try {
-            final String fileName = "src/com/company/katalog.txt";
-            fr = new FileReader(fileName);
-            frTMP = new FileReader(fileName);
-        } catch (FileNotFoundException e) {
-            System.out.println("Blad przy otwieraniu pliku!");
-        }
-
-        BufferedReader br = new BufferedReader(fr);
-        BufferedReader brTMP = new BufferedReader(frTMP);
-        try {
-            int j = 0;
-
-            wierszeTMP = wiersze;
-            wiersze = 0;
-            while (null != (liniaTMP = brTMP.readLine())) {
-                wiersze++;
-            }
-
-            dane = new Object[wiersze][kolumny];
-
-            while (null != (linia = br.readLine())) {
-                String[] words = linia.split(";", -1);
-
-                int i = 0;
-                for (String word : words) {
-                    if (word.isEmpty() && i < words.length - 1)
-                        dane[j][i] = "Brak informacji";
-                    else if (!word.isEmpty())
-                        dane[j][i] = word;
-
-                    i++;
-                }
-                j++;
-            }
-        } catch (IOException e) {
-            System.out.println("Blad odczytu pliku!");
-        }
-
-        try {
-            fr.close();
-        } catch (IOException e) {
-            System.out.println("Blad przy zamykaniu pliku!");
-        }
-    }
-
     //Polaczenie z baza danych na localhoscie
     public static Connection getDBConnection() {
         Connection dbConnection = null;
@@ -130,8 +78,8 @@ public class Main extends JFrame {
                 "Napęd fizyczny"};
 
         dane = new Object[wiersze][kolumny];
-
         List<Integer> editedRows = new ArrayList<>();
+        List<Integer> duplicatedRows = new ArrayList<>();
 
         Main okienko = new Main();
 
@@ -175,8 +123,11 @@ public class Main extends JFrame {
                     JOptionPane.showMessageDialog(okienko, "Wprowadź wartość według wzoru, np. 1920x1080");
                 } else {
                     super.setValueAt(aValue, row, column);
-                    dane[row][column] = aValue;
-                    editedRows.add(row);
+
+                    if (!String.valueOf(dane[row][column]).equals(String.valueOf(aValue))) {
+                        dane[row][column] = aValue;
+                        editedRows.add(row);
+                    }
                 }
             }
 
@@ -187,6 +138,8 @@ public class Main extends JFrame {
 
                 if (editedRows.contains(row))
                     color = Color.WHITE;
+                else if (duplicatedRows.contains(row))
+                    color = Color.RED;
                 else
                     color = Color.GRAY;
 
@@ -195,8 +148,6 @@ public class Main extends JFrame {
                 return c;
             }
         };
-
-        //table.setBackground(Color.GRAY);
 
         JScrollPane scrollPane = new JScrollPane(table, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setPreferredSize(new Dimension(1480, 600));
@@ -236,14 +187,81 @@ public class Main extends JFrame {
         button_import.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                importuj();
+                FileReader fr = null;
+                FileReader frTMP = null;
+                String linia = "";
+                String liniaTMP = "";
 
-                for (int i = wierszeTMP - 1; i >= 0; i--) {
-                    tableModel.removeRow(i);
+                duplicatedRows.clear();
+
+                try {
+                    final String fileName = "src/com/company/katalog.txt";
+                    fr = new FileReader(fileName);
+                    frTMP = new FileReader(fileName);
+                } catch (FileNotFoundException e1) {
+                    System.out.println("Blad przy otwieraniu pliku!");
                 }
 
-                for (int i = 0; i < wiersze; i++) {
-                    tableModel.addRow(dane[i]);
+                BufferedReader br = new BufferedReader(fr);
+                BufferedReader brTMP = new BufferedReader(frTMP);
+                try {
+                    int j = 0;
+
+                    daneTMP = new Object[wiersze][kolumny];
+                    daneTMP = dane;
+
+                    wierszeTMP = wiersze;
+                    wiersze = 0;
+                    while (null != (liniaTMP = brTMP.readLine())) {
+                        wiersze++;
+                    }
+
+                    dane = new Object[wiersze][kolumny];
+
+                    while (null != (linia = br.readLine())) {
+                        String[] words = linia.split(";", -1);
+
+                        int i = 0;
+                        for (String word : words) {
+                            if (word.isEmpty() && i < words.length - 1)
+                                dane[j][i] = "Brak informacji";
+                            else if (!word.isEmpty())
+                                dane[j][i] = word;
+
+                            i++;
+                        }
+                        j++;
+                    }
+
+                    //SZUKANIE DUPLIKATOW
+                    for (int i = 0; i < wiersze; i++) {
+                        istnieje_duplikat = false;
+                        for (j = 0; j < wierszeTMP; j++) {
+                            if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
+                                istnieje_duplikat = true;
+                            }
+                        }
+
+                        if (istnieje_duplikat) {
+                            duplicatedRows.add(i);
+                        }
+                    }
+
+                    for (int i = wierszeTMP - 1; i >= 0; i--) {
+                        tableModel.removeRow(i);
+                    }
+
+                    for (int i = 0; i < wiersze; i++) {
+                        tableModel.addRow(dane[i]);
+                    }
+                } catch (IOException e2) {
+                    System.out.println("Blad odczytu pliku!");
+                }
+
+                try {
+                    fr.close();
+                } catch (IOException e3) {
+                    System.out.println("Blad przy zamykaniu pliku!");
                 }
 
                 infoTA.setText("Wczytano dane z pliku txt");
@@ -398,11 +416,16 @@ public class Main extends JFrame {
                     //System.out.println("Root element: " + document.getDocumentElement().getNodeName());
                     NodeList nodeList = document.getElementsByTagName("laptop");
 
-                    int j = 0;
+                    duplicatedRows.clear();
+
+                    daneTMP = new Object[wiersze][kolumny];
+                    daneTMP = dane;
+
                     wierszeTMP = wiersze;
                     wiersze = nodeList.getLength();
                     dane = new Object[wiersze][kolumny];
 
+                    int j = 0;
                     for (int i = 0; i < nodeList.getLength(); i++) {
                         Node node = nodeList.item(i);
                         //System.out.println("\nLaptop id: "+ node.getAttributes().getNamedItem("id").getNodeValue());
@@ -443,6 +466,20 @@ public class Main extends JFrame {
                         }
                     }
 
+                    //SZUKANIE DUPLIKATOW
+                    for (int i = 0; i < wiersze; i++) {
+                        istnieje_duplikat = false;
+                        for (j = 0; j < wierszeTMP; j++) {
+                            if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
+                                istnieje_duplikat = true;
+                            }
+                        }
+
+                        if (istnieje_duplikat) {
+                            duplicatedRows.add(i);
+                        }
+                    }
+
                     for (int i = wierszeTMP - 1; i >= 0; i--) {
                         tableModel.removeRow(i);
                     }
@@ -450,7 +487,6 @@ public class Main extends JFrame {
                     for (int i = 0; i < wiersze; i++) {
                         tableModel.addRow(dane[i]);
                     }
-
                 } catch (ParserConfigurationException parserConfigurationException) {
                     parserConfigurationException.printStackTrace();
                 } catch (IOException ioException) {
@@ -470,9 +506,14 @@ public class Main extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM laptop");
+                    ResultSet resultSetTMP = connection.createStatement().executeQuery("SELECT * FROM laptop");
                     liczba_duplikatow = 0;
 
-                    daneTMP = new Object[wiersze][kolumny];
+                    wierszeTMP = 0;
+                    while (resultSetTMP.next()) {
+                        wierszeTMP++;
+                    }
+                    daneTMP = new Object[wierszeTMP][kolumny];
 
                     int i = 0, j = 0;
                     while (resultSet.next()) {
@@ -538,6 +579,11 @@ public class Main extends JFrame {
                     ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM laptop");
                     ResultSet resultSetTMP = connection.createStatement().executeQuery("SELECT * FROM laptop");
 
+                    duplicatedRows.clear();
+
+                    daneTMP = new Object[wiersze][kolumny];
+                    daneTMP = dane;
+
                     wierszeTMP = wiersze;
                     wiersze = 0;
                     while (resultSetTMP.next()) {
@@ -579,6 +625,20 @@ public class Main extends JFrame {
                         j++;
                         dane[i][j] = resultSet.getString("napedFizyczny");
                         i++;
+                    }
+
+                    //SZUKANIE DUPLIKATOW
+                    for (i = 0; i < wiersze; i++) {
+                        istnieje_duplikat = false;
+                        for (j = 0; j < wierszeTMP; j++) {
+                            if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
+                                istnieje_duplikat = true;
+                            }
+                        }
+
+                        if (istnieje_duplikat) {
+                            duplicatedRows.add(i);
+                        }
                     }
 
                     for (i = wierszeTMP - 1; i >= 0; i--) {
