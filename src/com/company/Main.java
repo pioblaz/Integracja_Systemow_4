@@ -7,6 +7,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,7 +27,8 @@ import static com.company.MysqlProperties.*;
 public class Main extends JFrame {
 
     public static String[] naglowki = null;
-    public static int wiersze = 24;
+    public static int wiersze = 0;
+    public static int wierszeTMP = 0;
     public static int kolumny = 15;
     public static Object[][] dane;
     public static Object[][] daneTMP = new Object[25][kolumny];
@@ -59,10 +62,14 @@ public class Main extends JFrame {
         BufferedReader brTMP = new BufferedReader(frTMP);
         try {
             int j = 0;
-            /*while (null != (liniaTMP = brTMP.readLine())) {
+
+            wierszeTMP = wiersze;
+            wiersze = 0;
+            while (null != (liniaTMP = brTMP.readLine())) {
                 wiersze++;
-                System.out.println(wiersze);
-            }*/
+            }
+
+            dane = new Object[wiersze][kolumny];
 
             while (null != (linia = br.readLine())) {
                 String[] words = linia.split(";", -1);
@@ -157,7 +164,10 @@ public class Main extends JFrame {
         infoTA.setText("Witam serdecznie!");
         infoTA.setFocusable(false);
 
-        JTable table = new JTable(dane, naglowki) {
+        DefaultTableModel tableModel = new DefaultTableModel(0, 0);
+        tableModel.setColumnIdentifiers(naglowki);
+
+        JTable table = new JTable(tableModel) {
             @Override
             public void setValueAt(Object aValue, int row, int column) {    //edycja danych
                 if (aValue.toString().trim().isEmpty()) {   //trim usuniecie bialych znakow - zeby spacje uznawalo jako puste
@@ -176,9 +186,8 @@ public class Main extends JFrame {
             }
         };
 
-        table.setBounds(30, 40, 200, 300);
-
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(30, 40, 200, 300);
 
         okienko.add(button_eksport);
         okienko.add(button_import);
@@ -204,7 +213,7 @@ public class Main extends JFrame {
                     for (int j = 0; j < 15; j++) {
                         zapis.print(dane[i][j] + ";");
                     }
-                    if (i < 23)
+                    if (i < wiersze - 1)
                         zapis.print("\n");
                 }
                 zapis.close();
@@ -216,6 +225,15 @@ public class Main extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 importuj();
+
+                for (int i = wierszeTMP - 1; i >= 0; i--) {
+                    tableModel.removeRow(i);
+                }
+
+                for (int i = 0; i < wiersze; i++) {
+                    tableModel.addRow(dane[i]);
+                }
+
                 infoTA.setText("Wczytano dane z pliku txt");
                 okienko.repaint();
             }
@@ -234,7 +252,7 @@ public class Main extends JFrame {
                     laptops.setAttribute("moddate", String.valueOf(new Date()));
 
                     int j;
-                    for (int i = 0; i < 24; i++) {
+                    for (int i = 0; i < wiersze; i++) {
                         j = 0;
                         Element laptop = document.createElement("laptop");
                         laptop.setAttribute("id", String.valueOf(i + 1));
@@ -368,15 +386,16 @@ public class Main extends JFrame {
                     NodeList nodeList = document.getElementsByTagName("laptop");
 
                     int j = 0;
+                    wierszeTMP = wiersze;
                     wiersze = nodeList.getLength();
-                    //dane = new Object[wiersze][kolumny];
+                    dane = new Object[wiersze][kolumny];
 
                     for (int i = 0; i < nodeList.getLength(); i++) {
                         Node node = nodeList.item(i);
                         //System.out.println("\nLaptop id: "+ node.getAttributes().getNamedItem("id").getNodeValue());
 
                         j = 0;
-                        if(node.getNodeType() == Node.ELEMENT_NODE) {
+                        if (node.getNodeType() == Node.ELEMENT_NODE) {
                             Element element = (Element) node;
 
                             dane[i][j] = element.getElementsByTagName("manufacturer").item(0).getTextContent();
@@ -411,6 +430,14 @@ public class Main extends JFrame {
                         }
                     }
 
+                    for (int i = wierszeTMP - 1; i >= 0; i--) {
+                        tableModel.removeRow(i);
+                    }
+
+                    for (int i = 0; i < wiersze; i++) {
+                        tableModel.addRow(dane[i]);
+                    }
+
                 } catch (ParserConfigurationException parserConfigurationException) {
                     parserConfigurationException.printStackTrace();
                 } catch (IOException ioException) {
@@ -431,9 +458,9 @@ public class Main extends JFrame {
                     ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM laptop");
                     liczba_duplikatow = 0;
 
-                    int i=0, j=0;
+                    int i = 0, j = 0;
                     while (resultSet.next()) {
-                        j=0;
+                        j = 0;
                         daneTMP[i][j] = resultSet.getString("producent");
                         j++;
                         daneTMP[i][j] = resultSet.getString("przekatna");
@@ -466,9 +493,9 @@ public class Main extends JFrame {
                         i++;
                     }
 
-                    for (i=0; i<24; i++) {
+                    for (i = 0; i < wiersze; i++) {
                         istnieje_duplikat = false;
-                        for (j=0; j<24; j++) {
+                        for (j = 0; j < wiersze; j++) {
                             if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
                                 istnieje_duplikat = true;
                             }
@@ -477,27 +504,13 @@ public class Main extends JFrame {
                         if (istnieje_duplikat) {
                             liczba_duplikatow++;
                         } else {
-                            connection.createStatement().execute("INSERT INTO laptop VALUES (NULL, '"+ dane[i][0] +"','"+ dane[i][1] +"','"+ dane[i][2] +"','"+ dane[i][3] +"','"+ dane[i][4] +"','"+ dane[i][5] +"','"+ dane[i][6] +"','"+ dane[i][7] +"','"+ dane[i][8] +"','"+ dane[i][9] +"','"+ dane[i][10] +"','"+ dane[i][11] +"','"+ dane[i][12] +"','"+ dane[i][13] +"','"+ dane[i][14] +"')");
+                            connection.createStatement().execute("INSERT INTO laptop VALUES (NULL, '" + dane[i][0] + "','" + dane[i][1] + "','" + dane[i][2] + "','" + dane[i][3] + "','" + dane[i][4] + "','" + dane[i][5] + "','" + dane[i][6] + "','" + dane[i][7] + "','" + dane[i][8] + "','" + dane[i][9] + "','" + dane[i][10] + "','" + dane[i][11] + "','" + dane[i][12] + "','" + dane[i][13] + "','" + dane[i][14] + "')");
                         }
                     }
-                    /*
-                    //obiekt tworzący połączenie z bazą danych.
-                        private Connection connection;
-                        //obiekt pozwalający tworzyć nowe wyrażenia SQL
-                        private Statement statement;
-                        //zapytanie SQL
-                        private String query;
-                        //parser zapytań SQL dla obiektów klasy Article
-                        private SQLArticleParser sqlArticleParser;
-                        connection = DriverManager.getConnection(DBURL, DBUSER, DBPASS);
-                                statement = connection.createStatement();
-                                statement.executeUpdate(query);
-                        https://javastart.pl/baza-wiedzy/java-ee/jdbc-podstawy-pracy-z-baza-danych
-                     */
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
-                infoTA.setText("Zapisano dane do bazy danych! Liczba duplikatow: "+ liczba_duplikatow);
+                infoTA.setText("Zapisano dane do bazy danych! Liczba duplikatow: " + liczba_duplikatow);
             }
         });
 
@@ -509,26 +522,17 @@ public class Main extends JFrame {
                     ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM laptop");
                     ResultSet resultSetTMP = connection.createStatement().executeQuery("SELECT * FROM laptop");
 
-                    /*PRZERYSOWANIE TABELKI ABY WSTAWIC WIECEJ NIZ 24 wiersze
-                    //okienko.remove(sp);
-                    okienko.repaint();
-                    okienko.setVisible(true);
-
+                    wierszeTMP = wiersze;
                     wiersze = 0;
                     while (resultSetTMP.next()) {
                         wiersze++;
                     }
 
-                    //init_table(wiersze);
+                    dane = new Object[wiersze][kolumny];
 
-                    JScrollPane sp = new JScrollPane(table);
-                    okienko.add(sp);
-                    okienko.repaint();
-                    okienko.setVisible(true);*/
-
-                    int i=0, j=0;
+                    int i = 0, j = 0;
                     while (resultSet.next()) {
-                        j=0;
+                        j = 0;
                         dane[i][j] = resultSet.getString("producent");
                         j++;
                         dane[i][j] = resultSet.getString("przekatna");
@@ -560,6 +564,15 @@ public class Main extends JFrame {
                         dane[i][j] = resultSet.getString("napedFizyczny");
                         i++;
                     }
+
+                    for (i = wierszeTMP - 1; i >= 0; i--) {
+                        tableModel.removeRow(i);
+                    }
+
+                    for (i = 0; i < wiersze; i++) {
+                        tableModel.addRow(dane[i]);
+                    }
+
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
