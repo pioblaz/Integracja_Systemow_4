@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<laptops moddate="Thu Apr 07 09:25:05 CEST 2022">
+<laptops moddate="Thu Apr 07 17:59:40 CEST 2022">
     <laptop id="1">
         <manufacturer>Dell</manufacturer>
         <screen touch="nie">
@@ -48,7 +48,7 @@
     </laptop>
     <laptop id="3">
         <manufacturer>Fujitsu</manufacturer>
-        <screen touch="tak">
+        <screen touch="nie">
             <size>14"</size>
             <resolution>1920x1080</resolution>
             <type>blyszczaca</type>
@@ -124,7 +124,7 @@
         </screen>
         <processor>
             <name>intel i7</name>
-            <physical_cores>4</physical_cores>
+            <physical_cores>6</physical_cores>
             <clock_speed>2800</clock_speed>
         </processor>
         <ram>8GB</ram>

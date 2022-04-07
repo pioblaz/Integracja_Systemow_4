@@ -30,13 +30,14 @@ import static javax.swing.ScrollPaneConstants.*;
 public class Main extends JFrame {
 
     public static String[] naglowki = null;
-    public static int wiersze = 0;
-    public static int wierszeTMP = 0;
-    public static int kolumny = 15;
+    public static int wiersze = 0, wierszeTMP = 0, kolumny = 15, liczba_duplikatow = 0, liczba_nowych_rekordow = 0, i = 0, j = 0;
     public static Object[][] dane;
     public static Object[][] daneTMP;
-    public static int liczba_duplikatow = 0;
     public static boolean istnieje_duplikat = false;
+    public static List<Integer> editedRows = new ArrayList<>();
+    public static List<Integer> duplicatedRows = new ArrayList<>();
+    public static Main okienko = new Main();
+    public static DefaultTableModel tableModel;
 
     public Main() {
         setSize(1500, 700);
@@ -54,6 +55,30 @@ public class Main extends JFrame {
             throwables.printStackTrace();
         }
         return dbConnection;
+    }
+
+    //szukanie duplikatow do kolorowania wierszy
+    public static void searchDuplicate(int rows, int rowsTMP) {
+        for (i = 0; i < rows; i++) {
+            istnieje_duplikat = false;
+            for (j = 0; j < rowsTMP; j++) {
+                if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
+                    istnieje_duplikat = true;
+                }
+            }
+
+            if (istnieje_duplikat) {
+                duplicatedRows.add(i);
+            }
+        }
+
+        for (i = rowsTMP - 1; i >= 0; i--) {
+            tableModel.removeRow(i);
+        }
+
+        for (i = 0; i < rows; i++) {
+            tableModel.addRow(dane[i]);
+        }
     }
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -74,10 +99,6 @@ public class Main extends JFrame {
                 "Napęd fizyczny"};
 
         dane = new Object[wiersze][kolumny];
-        List<Integer> editedRows = new ArrayList<>();
-        List<Integer> duplicatedRows = new ArrayList<>();
-
-        Main okienko = new Main();
 
         JButton button_eksport = new JButton("Eksportuj dane do txt");   //przycisk eksport
         button_eksport.setSize(100, 100);
@@ -98,11 +119,11 @@ public class Main extends JFrame {
         JButton button_import_DB = new JButton("Importuj dane z bazy danych");   //przycisk importu z BD
         button_import_DB.setBackground(Color.RED);
 
-        JTextArea infoTA = new JTextArea();
+        JTextArea infoTA = new JTextArea();     //text area do wyswietlania info
         infoTA.setText("Witam serdecznie!");
         infoTA.setFocusable(false);
 
-        DefaultTableModel tableModel = new DefaultTableModel(0, 0);
+        tableModel = new DefaultTableModel(0, 0);     //TableModel
         tableModel.setColumnIdentifiers(naglowki);
 
         JTable table = new JTable(tableModel) {
@@ -127,6 +148,7 @@ public class Main extends JFrame {
                 }
             }
 
+            //Kolorowanie komorek
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component c = super.prepareRenderer(renderer, row, column);
@@ -146,7 +168,7 @@ public class Main extends JFrame {
         };
 
         JScrollPane scrollPane = new JScrollPane(table, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(1480, 600));
+        scrollPane.setPreferredSize(new Dimension(1480, 600));      //ustawienia ScrollPane'a
 
         okienko.add(button_eksport);
         okienko.add(button_import);
@@ -201,8 +223,9 @@ public class Main extends JFrame {
                 BufferedReader br = new BufferedReader(fr);
                 BufferedReader brTMP = new BufferedReader(frTMP);
                 try {
-                    int j = 0;
+                    j = 0;
 
+                    //Tworzenie tymczasowych danych do sprawdzania duplikatow
                     daneTMP = new Object[wiersze][kolumny];
                     daneTMP = dane;
 
@@ -217,7 +240,7 @@ public class Main extends JFrame {
                     while (null != (linia = br.readLine())) {
                         String[] words = linia.split(";", -1);
 
-                        int i = 0;
+                        i = 0;
                         for (String word : words) {
                             if (word.isEmpty() && i < words.length - 1)
                                 dane[j][i] = "Brak informacji";
@@ -230,26 +253,8 @@ public class Main extends JFrame {
                     }
 
                     //SZUKANIE DUPLIKATOW
-                    for (int i = 0; i < wiersze; i++) {
-                        istnieje_duplikat = false;
-                        for (j = 0; j < wierszeTMP; j++) {
-                            if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
-                                istnieje_duplikat = true;
-                            }
-                        }
+                    searchDuplicate(wiersze, wierszeTMP);
 
-                        if (istnieje_duplikat) {
-                            duplicatedRows.add(i);
-                        }
-                    }
-
-                    for (int i = wierszeTMP - 1; i >= 0; i--) {
-                        tableModel.removeRow(i);
-                    }
-
-                    for (int i = 0; i < wiersze; i++) {
-                        tableModel.addRow(dane[i]);
-                    }
                 } catch (IOException e2) {
                     System.out.println("Blad odczytu pliku!");
                 }
@@ -278,8 +283,8 @@ public class Main extends JFrame {
                     Element laptops = document.createElement("laptops");
                     laptops.setAttribute("moddate", String.valueOf(new Date()));
 
-                    int j;
-                    for (int i = 0; i < wiersze; i++) {
+                    //Eksport danych do xml'a
+                    for (i = 0; i < wiersze; i++) {
                         j = 0;
                         Element laptop = document.createElement("laptop");
                         laptop.setAttribute("id", String.valueOf(i + 1));
@@ -413,6 +418,7 @@ public class Main extends JFrame {
 
                     duplicatedRows.clear();
 
+                    //Tworzenie tymczasowych danych do sprawdzania duplikatow
                     daneTMP = new Object[wiersze][kolumny];
                     daneTMP = dane;
 
@@ -420,8 +426,8 @@ public class Main extends JFrame {
                     wiersze = nodeList.getLength();
                     dane = new Object[wiersze][kolumny];
 
-                    int j = 0;
-                    for (int i = 0; i < nodeList.getLength(); i++) {
+                    //Import danych z xml'a
+                    for (i = 0; i < nodeList.getLength(); i++) {
                         Node node = nodeList.item(i);
 
                         j = 0;
@@ -461,26 +467,8 @@ public class Main extends JFrame {
                     }
 
                     //SZUKANIE DUPLIKATOW
-                    for (int i = 0; i < wiersze; i++) {
-                        istnieje_duplikat = false;
-                        for (j = 0; j < wierszeTMP; j++) {
-                            if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
-                                istnieje_duplikat = true;
-                            }
-                        }
+                    searchDuplicate(wiersze, wierszeTMP);
 
-                        if (istnieje_duplikat) {
-                            duplicatedRows.add(i);
-                        }
-                    }
-
-                    for (int i = wierszeTMP - 1; i >= 0; i--) {
-                        tableModel.removeRow(i);
-                    }
-
-                    for (int i = 0; i < wiersze; i++) {
-                        tableModel.addRow(dane[i]);
-                    }
                 } catch (ParserConfigurationException parserConfigurationException) {
                     parserConfigurationException.printStackTrace();
                 } catch (IOException ioException) {
@@ -501,15 +489,18 @@ public class Main extends JFrame {
                 try {
                     ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM laptop");
                     ResultSet resultSetTMP = connection.createStatement().executeQuery("SELECT * FROM laptop");
-                    liczba_duplikatow = 0;
 
+                    liczba_duplikatow = 0;
+                    liczba_nowych_rekordow = 0;
+
+                    //Tworzenie tymczasowych danych do sprawdzania duplikatow
                     wierszeTMP = 0;
                     while (resultSetTMP.next()) {
                         wierszeTMP++;
                     }
                     daneTMP = new Object[wierszeTMP][kolumny];
 
-                    int i = 0, j = 0;
+                    i = 0;
                     while (resultSet.next()) {
                         j = 0;
                         daneTMP[i][j] = resultSet.getString("producent");
@@ -546,7 +537,7 @@ public class Main extends JFrame {
 
                     for (i = 0; i < wiersze; i++) {
                         istnieje_duplikat = false;
-                        for (j = 0; j < wiersze; j++) {
+                        for (j = 0; j < wierszeTMP; j++) {
                             if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
                                 istnieje_duplikat = true;
                             }
@@ -556,12 +547,13 @@ public class Main extends JFrame {
                             liczba_duplikatow++;
                         } else {
                             connection.createStatement().execute("INSERT INTO laptop VALUES (NULL, '" + dane[i][0] + "','" + dane[i][1] + "','" + dane[i][2] + "','" + dane[i][3] + "','" + dane[i][4] + "','" + dane[i][5] + "','" + dane[i][6] + "','" + dane[i][7] + "','" + dane[i][8] + "','" + dane[i][9] + "','" + dane[i][10] + "','" + dane[i][11] + "','" + dane[i][12] + "','" + dane[i][13] + "','" + dane[i][14] + "')");
+                            liczba_nowych_rekordow++;
                         }
                     }
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
-                infoTA.setText("Zapisano do bazy danych " + (wiersze - liczba_duplikatow) + " nowych rekordów. Liczba duplikatow: " + liczba_duplikatow);
+                infoTA.setText("Zapisano do bazy danych " + (liczba_nowych_rekordow) + " nowych rekordów. Liczba duplikatow: " + liczba_duplikatow);
             }
         });
 
@@ -574,6 +566,7 @@ public class Main extends JFrame {
 
                     duplicatedRows.clear();
 
+                    //Tworzenie tymczasowych danych do sprawdzania duplikatow
                     daneTMP = new Object[wiersze][kolumny];
                     daneTMP = dane;
 
@@ -583,9 +576,9 @@ public class Main extends JFrame {
                         wiersze++;
                     }
 
+                    //Import danych z DB
                     dane = new Object[wiersze][kolumny];
-
-                    int i = 0, j = 0;
+                    i = 0;
                     while (resultSet.next()) {
                         j = 0;
                         dane[i][j] = resultSet.getString("producent");
@@ -621,26 +614,7 @@ public class Main extends JFrame {
                     }
 
                     //SZUKANIE DUPLIKATOW
-                    for (i = 0; i < wiersze; i++) {
-                        istnieje_duplikat = false;
-                        for (j = 0; j < wierszeTMP; j++) {
-                            if (String.valueOf(dane[i][0]).equals(String.valueOf(daneTMP[j][0])) && String.valueOf(dane[i][1]).equals(String.valueOf(daneTMP[j][1])) && String.valueOf(dane[i][2]).equals(String.valueOf(daneTMP[j][2])) && String.valueOf(dane[i][3]).equals(String.valueOf(daneTMP[j][3])) && String.valueOf(dane[i][4]).equals(String.valueOf(daneTMP[j][4])) && String.valueOf(dane[i][5]).equals(String.valueOf(daneTMP[j][5])) && String.valueOf(dane[i][6]).equals(String.valueOf(daneTMP[j][6])) && String.valueOf(dane[i][7]).equals(String.valueOf(daneTMP[j][7])) && String.valueOf(dane[i][8]).equals(String.valueOf(daneTMP[j][8])) && String.valueOf(dane[i][9]).equals(String.valueOf(daneTMP[j][9])) && String.valueOf(dane[i][10]).equals(String.valueOf(daneTMP[j][10])) && String.valueOf(dane[i][11]).equals(String.valueOf(daneTMP[j][11])) && String.valueOf(dane[i][12]).equals(String.valueOf(daneTMP[j][12])) && String.valueOf(dane[i][13]).equals(String.valueOf(daneTMP[j][13])) && String.valueOf(dane[i][14]).equals(String.valueOf(daneTMP[j][14]))) {
-                                istnieje_duplikat = true;
-                            }
-                        }
-
-                        if (istnieje_duplikat) {
-                            duplicatedRows.add(i);
-                        }
-                    }
-
-                    for (i = wierszeTMP - 1; i >= 0; i--) {
-                        tableModel.removeRow(i);
-                    }
-
-                    for (i = 0; i < wiersze; i++) {
-                        tableModel.addRow(dane[i]);
-                    }
+                    searchDuplicate(wiersze, wierszeTMP);
 
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
