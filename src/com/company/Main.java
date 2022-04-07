@@ -59,6 +59,9 @@ public class Main extends JFrame {
 
     //szukanie duplikatow do kolorowania wierszy
     public static void searchDuplicate(int rows, int rowsTMP) {
+        liczba_duplikatow = 0;
+        liczba_nowych_rekordow = 0;
+
         for (i = 0; i < rows; i++) {
             istnieje_duplikat = false;
             for (j = 0; j < rowsTMP; j++) {
@@ -69,6 +72,9 @@ public class Main extends JFrame {
 
             if (istnieje_duplikat) {
                 duplicatedRows.add(i);
+                liczba_duplikatow++;
+            } else {
+                liczba_nowych_rekordow++;
             }
         }
 
@@ -265,7 +271,7 @@ public class Main extends JFrame {
                     System.out.println("Blad przy zamykaniu pliku!");
                 }
 
-                infoTA.setText("Wczytano dane z pliku txt");
+                infoTA.setText("Wczytano dane z pliku txt:  " + liczba_nowych_rekordow + " nowych rekordow, " + liczba_duplikatow + " duplikatow");
                 editedRows.clear();
                 okienko.repaint();
             }
@@ -476,7 +482,7 @@ public class Main extends JFrame {
                 } catch (SAXException saxException) {
                     saxException.printStackTrace();
                 }
-                infoTA.setText("Wczytano dane z pliku xml");
+                infoTA.setText("Wczytano dane z pliku xml:  " + liczba_nowych_rekordow + " nowych rekordow, " + liczba_duplikatow + " duplikatow");
                 editedRows.clear();
                 okienko.repaint();
             }
@@ -553,7 +559,7 @@ public class Main extends JFrame {
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
-                infoTA.setText("Zapisano do bazy danych " + (liczba_nowych_rekordow) + " nowych rekordów. Liczba duplikatow: " + liczba_duplikatow);
+                infoTA.setText("Zapisano do bazy danych " + liczba_nowych_rekordow + " nowych rekordów. Liczba duplikatow: " + liczba_duplikatow);
             }
         });
 
@@ -619,7 +625,7 @@ public class Main extends JFrame {
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
-                infoTA.setText("Wczytano dane z bazy danych");
+                infoTA.setText("Wczytano dane z bazy danych:  " + liczba_nowych_rekordow + " nowych rekordow, " + liczba_duplikatow + " duplikatow");
                 editedRows.clear();
                 okienko.repaint();
             }
