@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<laptops moddate="Wed Apr 06 18:28:20 CEST 2022">
+<laptops moddate="Thu Apr 07 09:25:05 CEST 2022">
     <laptop id="1">
         <manufacturer>Dell</manufacturer>
         <screen touch="nie">
@@ -170,7 +170,7 @@
         </screen>
         <processor>
             <name>intel i7</name>
-            <physical_cores>8</physical_cores>
+            <physical_cores>4</physical_cores>
             <clock_speed>2800</clock_speed>
         </processor>
         <ram>24GB</ram>
@@ -240,7 +240,7 @@
         <processor>
             <name>intel i5</name>
             <physical_cores>Brak informacji</physical_cores>
-            <clock_speed>2120</clock_speed>
+            <clock_speed>2800</clock_speed>
         </processor>
         <ram>Brak informacji</ram>
         <disc type="Brak informacji">
@@ -469,7 +469,7 @@
         </screen>
         <processor>
             <name>intel i3</name>
-            <physical_cores>4</physical_cores>
+            <physical_cores>6</physical_cores>
             <clock_speed>2800</clock_speed>
         </processor>
         <ram>12GB</ram>
@@ -485,7 +485,7 @@
     </laptop>
     <laptop id="22">
         <manufacturer>Sony</manufacturer>
-        <screen touch="tak">
+        <screen touch="nie">
             <size>11"</size>
             <resolution>Brak informacji</resolution>
             <type>blyszczaca</type>

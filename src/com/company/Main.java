@@ -38,10 +38,6 @@ public class Main extends JFrame {
     public static int liczba_duplikatow = 0;
     public static boolean istnieje_duplikat = false;
 
-    /*public static JTable table = new JTable();
-    public static Main okienko = new Main();
-    public static JScrollPane scrollPane = new JScrollPane();*/
-
     public Main() {
         setSize(1500, 700);
         setTitle("Integracja systemów Lab4 - Piotr Błażewicz");
@@ -413,7 +409,6 @@ public class Main extends JFrame {
                     DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
                     Document document = documentBuilder.parse(file);
                     document.getDocumentElement().normalize();
-                    //System.out.println("Root element: " + document.getDocumentElement().getNodeName());
                     NodeList nodeList = document.getElementsByTagName("laptop");
 
                     duplicatedRows.clear();
@@ -428,7 +423,6 @@ public class Main extends JFrame {
                     int j = 0;
                     for (int i = 0; i < nodeList.getLength(); i++) {
                         Node node = nodeList.item(i);
-                        //System.out.println("\nLaptop id: "+ node.getAttributes().getNamedItem("id").getNodeValue());
 
                         j = 0;
                         if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -575,7 +569,6 @@ public class Main extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    //ResultSet resultSet = statement.executeQuery("SELECT idLaptop, producent, przekatna, rozdzielczosc, rodzajPowierzchni, ekranDotykowy, procesor, liczbaRdzeni, procesor, liczbaRdzeni, predkoscTaktowania, ram, pojemnoscDysku, rodzajDysku, ukladGraficzny, pamiecGpu, systemOperacyjny, napedFizyczny FROM laptop");
                     ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM laptop");
                     ResultSet resultSetTMP = connection.createStatement().executeQuery("SELECT * FROM laptop");
 
