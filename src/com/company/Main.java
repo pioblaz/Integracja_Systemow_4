@@ -126,7 +126,7 @@ public class Main extends JFrame {
         button_import_DB.setBackground(Color.RED);
 
         JTextArea infoTA = new JTextArea();     //text area do wyswietlania info
-        infoTA.setText("Witam serdecznie!");
+        infoTA.setText("Integracja systemów Lab4 - Piotr Błażewicz");
         infoTA.setFocusable(false);
 
         tableModel = new DefaultTableModel(0, 0);     //TableModel
@@ -137,7 +137,6 @@ public class Main extends JFrame {
             public void setValueAt(Object aValue, int row, int column) {    //edycja danych
                 if (aValue.toString().trim().isEmpty()) {   //trim usuniecie bialych znakow - zeby spacje uznawalo jako puste
                     JOptionPane.showMessageDialog(okienko, "Pole nie może być puste!");
-                    //System.out.println("Puste pole!");
                 } else if ((column == 4 || column == 10) && aValue.toString().trim().length() != 3) {
                     JOptionPane.showMessageDialog(okienko, "Tekst musi miec 3 znaki!");
                 } else if (column == 1 && !aValue.toString().endsWith("\"")) {
